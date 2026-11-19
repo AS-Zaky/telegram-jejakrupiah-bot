@@ -1,0 +1,22 @@
+{
+  "name": "telegram-jejakrupiah-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/index.js",
+    "dev": "node --env-file-if-exists=.env --watch src/index.js",
+    "migrate": "node --env-file-if-exists=.env scripts/migrate.js",
+    "check": "node --env-file-if-exists=.env test/smoke.mjs",
+    "test": "node --env-file-if-exists=.env test/smoke.mjs && node test/views.mjs && node test/history.mjs && node test/resilience.mjs && node test/media.mjs && node test/features.mjs && node test/export.mjs"
+  },
+  "dependencies": {
+    "@google/genai": "^1.30.0",
+    "grammy": "^1.38.0",
+    "node-cron": "^4.6.0",
+    "pg": "^8.13.1"
+  }
+}
