@@ -12,8 +12,12 @@ function createPool() {
     // Default pg = 0 (tunggu selamanya). Ini penyebab bot diam tanpa error
     // ketika host pooler tidak bisa dihubungi.
     connectionTimeoutMillis: 10_000,
-    idleTimeoutMillis: 30_000,
+    // Serverless: fungsi di-freeze setelah request, socket idle dianggap mati
+    // oleh pooler. Umur pendek mencegah "connection timeout" pada warm start
+    // dan menjaga slot koneksi Supabase tidak penuh.
+    idleTimeoutMillis: 10_000,
     max: 5,
+    allowExitOnIdle: true,
   });
 
   // WAJIB: error dari koneksi idle mematikan proses kalau tidak ada listener.

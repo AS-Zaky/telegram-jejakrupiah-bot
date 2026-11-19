@@ -51,3 +51,13 @@ export function createBot() {
 
   return bot;
 }
+
+/**
+ * Instance tunggal untuk semua entry point (long polling lokal & webhook Vercel).
+ * Memanggil `setWebhook`/`getMe` tidak terjadi di sini, jadi aman tanpa network.
+ */
+let shared;
+
+export function getBot() {
+  return (shared ??= createBot());
+}

@@ -100,6 +100,34 @@ test tidak meninggalkan proses cron hidup.
 Konsekuensi: **rekap hanya terkirim kalau `ALLOWED_TELEGRAM_IDS` terisi**. Kalau whitelist kosong
 (semua orang boleh pakai bot), tidak ada daftar tujuan — bot mencatat `[CRON]` dan berhenti.
 
+## Deploy ke Vercel (webhook)
+
+Mode lokal tetap `npm start` (long polling). Untuk Vercel, dua fungsi di `api/` menggantikannya:
+
+- **`api/webhook.js`** — `GET` = health check, `POST` = diteruskan ke `webhookCallback(bot, 'http')`.
+  Bot dipakai lewat `getBot()` yang meng-cache instance di level modul, jadi warm invocation
+  tidak membuat ulang bot.
+- **`api/cron.js`** — dipanggil `vercel.json` tiap `0 13 * * *` (20:00 WIB). Kalau `CRON_SECRET`
+  diset, header `Authorization: Bearer <CRON_SECRET>` wajib cocok, kalau tidak 401.
+  `runDailyRecap` sudah melewati hari yang bukan akhir bulan.
+
+Env tambahan di dashboard Vercel: `TELEGRAM_WEBHOOK_SECRET` dan `CRON_SECRET`. Keduanya opsional
+tapi sangat disarankan — tanpa secret, siapa pun yang tahu URL bisa memicu rekap atau mengirim
+update palsu. Setelah deploy, daftarkan webhook sekali:
+
+```bash
+curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
+  -d "url=https://<proyek>.vercel.app/api/webhook" \
+  -d "secret_token=$TELEGRAM_WEBHOOK_SECRET"
+```
+
+Kedua file memakai response API Node polos (`res.statusCode`, `res.end`), bukan `res.status().json()`
+— metode itu milik Next.js dan tidak ada di runtime Node Vercel.
+
+Pool Postgres disetel untuk serverless (`idleTimeoutMillis: 10000`, `max: 5`,
+`allowExitOnIdle: true`) supaya socket idle yang dibekukan Vercel tidak menahan slot koneksi
+Supabase.
+
 ## MIME type & tanggal
 
 Telegram sering mengirim `content-type: application/octet-stream` saat file diunduh, dan Gemini

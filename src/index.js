@@ -1,11 +1,12 @@
 import { pathToFileURL } from 'node:url';
-import { createBot } from './bot/bot.js';
+import { getBot } from './bot/bot.js';
 import { config } from './config.js';
 import { startMonthlyRecapScheduler } from './services/scheduler.js';
 
 /** Start hanya kalau file ini dijalankan langsung, bukan di-import (memudahkan smoke test). */
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const bot = createBot();
+  const bot = getBot();
+
 
   for (const signal of ['SIGINT', 'SIGTERM']) {
     process.once(signal, () => bot.stop());

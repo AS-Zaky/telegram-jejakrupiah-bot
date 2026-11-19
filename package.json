@@ -11,7 +11,7 @@
     "dev": "node --env-file-if-exists=.env --watch src/index.js",
     "migrate": "node --env-file-if-exists=.env scripts/migrate.js",
     "check": "node --env-file-if-exists=.env test/smoke.mjs",
-    "test": "node --env-file-if-exists=.env test/smoke.mjs && node test/views.mjs && node test/history.mjs && node test/resilience.mjs && node test/media.mjs && node test/features.mjs && node test/export.mjs"
+    "test": "node --env-file-if-exists=.env test/smoke.mjs && node test/views.mjs && node test/history.mjs && node test/resilience.mjs && node test/media.mjs && node test/features.mjs && node test/export.mjs && node test/serverless.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.30.0",
